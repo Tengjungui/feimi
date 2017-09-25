@@ -1,0 +1,247 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+    <meta name="format-detection" content="telephone=no" />
+    <title>飞米饭盒</title>
+    <script type="text/javascript">
+    	(window.onresize=function(){
+        var html = document.documentElement;
+        var hWidth= html.getBoundingClientRect().width;
+        html.style.fontSize = hWidth/18 +"px";
+    	})();
+    </script>
+    <link rel="stylesheet" type="text/css" href="css/reset.css">
+    <link rel="stylesheet" type="text/css" href="css/style.css">
+</head>
+<body class="skin" ontouchstart>
+	<header>
+		<h1 class="header-h1 text-center">
+			飞米饭盒流量平台
+			<span class="txt-device">
+				设备绑定
+			</span>
+		</h1>
+	</header>
+	
+	<div class="bind-form">
+		<!-- 
+		<div id="verification">
+			ssid不为空
+		</div>
+		 -->
+		
+		<form action="index.html" class="form-content" onsubmit="return checkForm();">	
+			<div class="input-group">
+				<span class="ico-group">
+					<img src="images/form_ico_1.png" class="form_ico_1" />
+				</span>
+				<input class="form-control" type="text" id="ssId" placeholder="SSID" onfocus="ssidFocus();" onfocus="ssidBlur();" >
+			</div>
+			<div class="input-group">
+				<span class="ico-group">
+					<img src="images/form_ico_2.png" class="form_ico_2"/>
+				</span>
+				<input class="form-control" type="tel" id="telId" placeholder="手机号" onfocus="telFocus();" onfocus="telBlur();">
+			</div>
+			<div class="input-group">
+				<span class="ico-group">
+					<img src="images/form_ico_3.png" class="form_ico_3"/>
+				</span>
+				<input class="form-control yz-control" type="text" id="yzm-input" placeholder="验证码"  onfocus="yzmFocus();" onfocus="yzmBlur();" > 
+				<input type="button" class="yzm" id="yzm-text" value="获取验证码">
+			</div>
+			<div class="submit">
+				<button type="button" id="submit">
+						确认绑定
+				</button>
+			</form>
+		</div>
+		
+	</div>
+	
+	<div class="modal" id="Modal">
+		获取验证验失败!
+	</div>
+
+	
+<script>
+		
+	function $(elementId){
+		return document.getElementById(elementId);
+	};
+		
+	/**********form*********/	
+	function validFn(attr,str){
+		var validTips=$('verification');
+		validTips.style.display=attr;
+		validTips.innerHTML=str;
+	}
+	setTimeout(function(){
+		var validTips=$('verification');
+		validTips.style.display='none';
+	},3000);
+		
+	
+	//ssid
+	function ssidFocus(){
+		var ssId=$('ssId');
+		validFn('block','SSID由8位数字组成');
+		return;
+		
+	};
+	function ssidBlur(){
+		var ssId=$('ssId');
+		var reg=/^\d{8}$/;   //8位数字
+		if(ssId.value==''){
+			validFn('block','ssid不为空');
+			return false;
+		}
+		if(reg.test(ssId.value)==false){
+			validFn('block','请输入正确的SSID');
+			return false;
+		}
+		else{
+			validFn('none','');
+		    return true;
+		}
+	};
+	
+	//tel
+	function telFocus(){
+		var telId=$('telId');
+		validFn('block','手机号由11位数字组成');
+		return;
+	};
+	function telBlur(){
+		var telId=$('telId');
+		var reg=/^(13|15|17|18)\d{9}$/;   //8位数字
+		if(telId.value==''){
+			validFn('block','手机号不为空');
+			return false;
+		}
+		if(reg.test(telId.value)==false){
+			validFn('block','请输入正确的手机号');
+			return false;
+		}
+		else{
+			validFn('none','');
+		    return true;
+		}
+	};
+	
+	//yzm
+	function yzmFocus(){
+		var yzm=$('yzm-input');
+		validFn('block','验证码为4位数字');
+		return;
+	};
+	function yzmBlur(){
+		var yzm=$('yzm-input');
+		var reg=/^\d{4}$/;  //四位数字
+		if(yzm.value==''){
+			validFn('block','验证码不为空');
+			return false;
+		}
+		if(reg.test(yzm.value)==false){
+			validFn('block','验证码错误');
+			return false;
+		}
+		else{
+			validFn('none','');
+		    return true;
+		}
+	};
+	
+	
+	//提交
+	function checkForm(){
+      var flagSsid=ssidBlur();
+      var flagTel=telBlur();
+      var flagYzm=yzmBlur();
+
+      ssidBlur();
+      telBlur();
+      yzmBlur();
+
+      if(flagSsid==true && flagTel==true && flagYzm==true){
+        return true;
+      }
+      else{
+        return false;
+      }
+    
+    }
+	/**********form the end*********/	
+
+
+
+	/**********倒计时*********/	
+	var yzmTxt=$('yzm-text');
+	var second=60;
+	yzmTxt.onclick=function(){
+		time(this);
+	};
+	
+	function time(t){
+		if(second===-1){
+			t.className='yzm btn-bg';
+			t.removeAttribute('disabled');
+			t.value='获取验证码';
+			second=60;
+		}else{
+			t.style.background='#ccc';
+			t.setAttribute('disabled',true);
+			t.value='重新发送'+second+'s';
+			second--;
+			
+			setTimeout(function(){
+				time(t);
+			},1000);
+		}
+		
+	}
+	
+
+  	/**********立即绑定点击时样式*********/	
+    function Current(){
+			$('submit').addEventListener('touchstart',touch, false);
+			$('submit').addEventListener('touchend',touch, false); 
+			function touch(event){
+				 var event = event || window.event; 
+				 switch(event.type){
+				 	case 'touchstart':
+				 	this.setAttribute('class','btnactive');
+				 	break;
+				 	
+				 	case 'touchend':
+				 	this.removeAttribute('class');
+				 	break;
+				 } 
+			}
+		};
+	window.addEventListener('load',Current, false); 
+	
+	
+	
+	/**********提示框*********/	
+	var Modal=document.getElementById('Modal');
+	var clientH=document.documentElement.clientHeight; //可视窗口高
+	var clientW=document.documentElement.clientWidth;  //可视窗口宽
+	var scrollTop=document.documentElement.scrollTop; //滚动距离
+	var iH=Modal.offsetHeight;  //元素高
+	//var iW=Modal.offsetWidth;	//元素宽
+	var timer=null;
+	window.onload=onscroll=function(){
+		Modal.style.top=(clientH-iH)/2+scrollTop+'px';
+		//Modal.style.left=(clientW-iW)/2+'px';
+	}
+	timer=setTimeout(function(){
+		Modal.style.display='none';
+	},2500);
+		
+</script>
+
+</body>
+</html>

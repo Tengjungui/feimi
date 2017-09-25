@@ -1,0 +1,207 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+    <meta name="format-detection" content="telephone=no" />
+    <title>飞米饭盒</title>
+    <script type="text/javascript">
+    	(window.onresize=function(){
+	        var html = document.documentElement;
+	        var hWidth= html.getBoundingClientRect().width;
+	        html.style.fontSize = hWidth/18 +"px";
+    	})();
+    </script>
+    <link rel="stylesheet" type="text/css" href="css/reset.css">
+    <link rel="stylesheet" type="text/css" href="css/style.css">
+</head>
+<body ontouchstart>
+	<header>
+		<div class="header">
+			<h1 class="header-h1 text-center">
+				飞米饭盒流量平台
+			</h1>
+			
+		    <div class="cav-box"> 
+		        <div class="wave" id="wave" >
+		          	<span class="txt">剩余流量</span>
+		            <span class="num">91454.8<i>M</i></span>
+		            <input type="hidden" value="0.7" id="per"/><!--改变value值实现流量充足中间不足的样式-->
+		            <canvas id="canvas">您的浏览器不支持canvas</canvas>
+		        </div>
+	    	</div>
+	
+			<hgroup class="hgroup-h4">
+				<h4>当前设备：185 5164 0438</h4>
+				<h4>到期时间：2017年10月30日</h4>
+			</hgroup>
+		</div>
+	</header>
+	
+	
+	<div class="content">
+		<h2 class="title-h2">
+			<span class="ico">
+				<img src="images/icon_1.png">
+			</span>
+			<p>购买流量包（立即生效）</p>
+		</h2>
+		<ul class="list flow clearfix">
+			<li class="current">5GB</li>
+			<li>15GB</li>
+			<li>20GB</li>
+			<li>25GB</li>
+			<li>300GB</li>
+			<li>无限流量</li>
+		</ul>
+		
+		<h2 class="title-h2">
+			<span class="ico">
+				<img src="images/icon_2.png">
+			</span>
+			选择套餐有效期
+		</h2>
+		<ul class="list month clearfix">
+			<li class="current">1个月</li>
+			<li>3个月</li>
+			<li>6个月</li>
+			<li>12个月</li>
+		</ul>
+		
+		
+		<div class="pay">
+			<p>流量包价格：<span id="result">50</span>元</p>
+			<a href="javascript:;" id="active">
+				<!--<img src="images/img-pay.png" />-->
+				<img src="images/shopcar.png"/>
+				立即购买
+			</a>
+		</div>
+		
+	</div>
+	
+	
+	<!--支付弹出框-->
+	<div class="popup" id="popup">
+		<p class="success"><span class="state-ico"></span>支付成功</p>
+	</div>
+	
+	
+	<script>
+		function $(elementId){
+			return document.getElementById(elementId);
+		}
+		
+		
+		function animate() { 
+          var ctx,waveImage;                 
+          var waveX = 0;
+          var waveY = 0;        
+          var canvas = $('canvas'); 
+          var per= $('per').value; //流量剩余百分比 
+          var wave=$('wave');
+          var canvasWidth =wave.offsetWidth;//外层div的宽度
+          var canvasHeight =wave.offsetHeight;//外层div的高度
+          var waveX_min = -203;//背景波浪图的一半宽度
+          var waveY_max = canvasHeight * per;//波浪图最终停留高度                    
+          var requestAnimationFrame =   //动画动作兼容不同浏览器
+              window.requestAnimationFrame || 
+              window.mozRequestAnimationFrame || 
+              window.webkitRequestAnimationFrame || 
+              window.msRequestAnimationFrame ||
+              function (callback) { window.setTimeout(callback, 1000 /80); };
+
+          if (!canvas.getContext) return;
+              ctx = canvas.getContext('2d');
+
+              //canvas大小设置为外层div的大小              
+              canvas.style.height=canvasWidth;
+              canvas.style.width=canvasHeight;
+
+              //来个Image对象,加载背景图
+              waveImage = new Image();
+              waveImage.onload = function () {
+                  waveImage.onload = null; 
+              }
+              
+              waveImage.src = 'images/flow.png';        
+              wave.setAttribute('class', 'wave');
+
+          function loop() {
+              ctx.clearRect(0, 0, canvasWidth, canvasHeight);  //清空给定的像素 （x,y,width,height）
+              if (waveY < waveY_max){ waveY += 1.5; }//Y轴方向每次上移1.5
+              if (waveX < waveX_min){ waveX = 0; } else{ waveX -= 0.5; }//X轴方向每次上移1.5
+
+              //在目标图像上显示源图像
+              ctx.globalCompositeOperation = 'source-over';
+              ctx.beginPath();
+              ctx.arc(canvasWidth/2, canvasHeight/2, canvasHeight/2, 0, Math.PI*2, true); //x,y,r,起始角，结束角，true(逆时针)/false(顺时针)
+              ctx.closePath();
+              ctx.fill();
+
+              //开始画背景图 只有在画布ctx范围内的图像才会显现，超出的部分隐藏
+              ctx.globalCompositeOperation = 'source-in';
+              ctx.drawImage(waveImage, waveX, canvasHeight - waveY);
+              //循环动画
+              requestAnimationFrame(loop);
+          }
+          loop();
+      }
+      animate();
+      
+      //购买流量包
+		var flowLi=document.querySelectorAll('.flow li');
+		for(var i=0;i<flowLi.length;i++){
+			flowLi[i].addEventListener('touchstart',function(){
+				for(var i=0;i<flowLi.length;i++){
+					flowLi[i].className='';
+				}
+				this.className='current';
+			});
+		}
+		
+		//套餐包月
+		var monthLi=document.querySelectorAll('.month li');
+		for(var j=0;j<monthLi.length;j++){
+
+			monthLi[j].addEventListener('touchstart',function(){
+				
+				for(var j=0;j<monthLi.length;j++){
+					monthLi[j].className='';
+				}
+				
+				this.className='current';
+			});
+		}
+	
+		/*立即购买触摸样式*/
+		function Current(){
+			$('active').addEventListener('touchstart',touch, false);
+			$('active').addEventListener('touchend',touch, false); 
+			var timer=null;
+			function touch(event){
+				 var event = event || window.event; 
+				 switch(event.type){
+				 	case 'touchstart':
+				 	this.setAttribute('class','touch');
+				 	
+				 	/*支付提示*/
+				 	clearInterval(timer);
+				 	$('popup').style.cssText=';transform:translateY(0);-webkit-transform:translateY(0);';
+				 	timer=setInterval(function(){
+				 		$('popup').style.cssText=';transform:translateY(-50px);-webkit-transform:translateY(-50px);';
+				 	},3000);
+				 	
+				 	break;
+				 	
+				 	case 'touchend':
+				 	this.removeAttribute('class');
+				 	break;
+				 } 
+			}
+		}
+		window.addEventListener('load',Current, false); 
+
+	</script>
+</body>
+</html>
